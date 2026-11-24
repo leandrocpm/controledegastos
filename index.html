@@ -2113,7 +2113,7 @@
       } else if (mode === 'INSTALLMENT') {
         currentInst = Math.max(1, parseInt(document.getElementById(`${prefix}-current-inst`).value, 10) || 1);
         totalInst = Math.max(currentInst, parseInt(document.getElementById(`${prefix}-total-inst`).value, 10) || 2);
-        monthlyAmount = amountType === 'TOTAL' ? (rawAmount / totalInst) : rawAmount;
+        monthlyAmount = amountType === 'TOTAL' ? (rawAmount / totInst) : rawAmount;
       }
 
       monthlyAmount = Math.round(monthlyAmount * 100) / 100;
@@ -2406,12 +2406,18 @@
     import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+    const DEFAULT_FIREBASE_CONFIG = {
+      apiKey: "AIzaSyDXOZ5-sqgg4-HfdltCyxXvvIZMkbzIl4I",
+      authDomain: "orcamento-leandro-26c54.firebaseapp.com",
+      projectId: "orcamento-leandro-26c54",
+      storageBucket: "orcamento-leandro-26c54.firebasestorage.app"
+    };
+
     (async () => {
       try {
-        if (typeof __firebase_config === 'undefined' || !__firebase_config) return;
-        const firebaseConfig = typeof __firebase_config === 'string'
-          ? JSON.parse(__firebase_config)
-          : __firebase_config;
+        const firebaseConfig = (typeof __firebase_config !== 'undefined' && __firebase_config)
+          ? (typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config)
+          : DEFAULT_FIREBASE_CONFIG;
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -2423,7 +2429,7 @@
           await signInAnonymously(auth);
         }
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'orcamento-leandro-26c54';
         const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'orcamento_leandro', 'estado_principal');
 
         let isRemoteUpdate = false;
