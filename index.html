@@ -74,6 +74,9 @@
 
         <!-- Controles Desktop (Mês + Reset) -->
         <div class="hidden lg:flex items-center gap-3">
+          <span id="cloud-sync-badge" class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-[11px] font-medium text-slate-300">
+            Conectando...
+          </span>
           <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-xl border border-slate-700">
             <button type="button" onclick="stepMonth(-1)" title="Mês anterior" class="px-2.5 py-1 rounded-lg hover:bg-slate-700 text-slate-300 hover:text-white text-xs cursor-pointer">◀</button>
             <select id="month-select-desktop" onchange="setSelectedMonth(this.value)" class="bg-transparent px-2 py-1 text-xs font-bold text-white focus:outline-none cursor-pointer"></select>
@@ -2113,7 +2116,7 @@
       } else if (mode === 'INSTALLMENT') {
         currentInst = Math.max(1, parseInt(document.getElementById(`${prefix}-current-inst`).value, 10) || 1);
         totalInst = Math.max(currentInst, parseInt(document.getElementById(`${prefix}-total-inst`).value, 10) || 2);
-        monthlyAmount = amountType === 'TOTAL' ? (rawAmount / totInst) : rawAmount;
+        monthlyAmount = amountType === 'TOTAL' ? (rawAmount / totalInst) : rawAmount;
       }
 
       monthlyAmount = Math.round(monthlyAmount * 100) / 100;
@@ -2413,6 +2416,15 @@
       storageBucket: "orcamento-leandro-26c54.firebasestorage.app"
     };
 
+    function updateSyncBadge(text, isOk) {
+      const badge = document.getElementById('cloud-sync-badge');
+      if (!badge) return;
+      badge.textContent = text;
+      badge.className = isOk
+        ? 'px-2.5 py-1 rounded-lg bg-emerald-950/80 border border-emerald-700/60 text-[11px] font-semibold text-emerald-300'
+        : 'px-2.5 py-1 rounded-lg bg-amber-950/80 border border-amber-700/60 text-[11px] font-semibold text-amber-300';
+    }
+
     (async () => {
       try {
         const firebaseConfig = (typeof __firebase_config !== 'undefined' && __firebase_config)
@@ -2437,12 +2449,18 @@
 
         onCloudSaveCallback = (currentState) => {
           if (isRemoteUpdate) return;
+          updateSyncBadge('Salvando...', true);
           clearTimeout(saveTimeout);
           saveTimeout = setTimeout(() => {
             setDoc(docRef, {
               payload: JSON.stringify(currentState),
               updatedAt: Date.now()
-            }).catch((err) => console.error('Erro ao salvar na nuvem:', err));
+            }).then(() => {
+              updateSyncBadge('Nuvem OK', true);
+            }).catch((err) => {
+              console.error('Erro ao salvar na nuvem:', err);
+              updateSyncBadge('Salvo Local', false);
+            });
           }, 300);
         };
 
@@ -2463,6 +2481,8 @@
           });
         }
 
+        updateSyncBadge('Nuvem OK', true);
+
         onSnapshot(docRef, (snap) => {
           if (snap.exists() && snap.data().payload) {
             const incoming = sanitizeState(JSON.parse(snap.data().payload));
@@ -2478,9 +2498,11 @@
           }
         }, (err) => {
           console.error('Erro na escuta em tempo real:', err);
+          updateSyncBadge('Modo Local', false);
         });
       } catch (err) {
         console.warn('Sincronização em nuvem indisponível, operando com armazenamento local:', err);
+        updateSyncBadge('Modo Local', false);
       }
     })();
   </script>
