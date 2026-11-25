@@ -591,6 +591,92 @@
     </div>
   </div>
 
+  <!-- ===================================================================== -->
+  <!-- MODAL 3: EDITAR CÉLULA DA PLANILHA LEANDRO (2)                        -->
+  <!-- ===================================================================== -->
+  <div id="modal-edit-cell" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden animate-fade">
+      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div>
+          <h3 id="edit-cell-title" class="text-base font-bold text-slate-900">Editar Valor</h3>
+          <p id="edit-cell-subtitle" class="text-xs text-slate-500"></p>
+        </div>
+        <button type="button" onclick="closeModal('modal-edit-cell')" class="px-2 py-1 rounded-lg text-slate-500 hover:bg-slate-200 cursor-pointer">✕</button>
+      </div>
+      <form onsubmit="handleEditCellSubmit(event)" class="p-5 space-y-4">
+        <input type="hidden" id="edit-cell-type" />
+        <input type="hidden" id="edit-cell-id" />
+        <input type="hidden" id="edit-cell-month" />
+        <div>
+          <label for="edit-cell-value" class="block text-xs font-semibold text-slate-700 mb-1">Novo Valor (R$)</label>
+          <input type="number" id="edit-cell-value" step="0.01" required class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-base font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+          <input type="checkbox" id="edit-cell-propagate" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+          <span>Replicar este valor para todos os meses seguintes</span>
+        </label>
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" onclick="closeModal('modal-edit-cell')" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer">Cancelar</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs cursor-pointer">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 4: NOVA LINHA DE CONTA EM LEANDRO (2)                           -->
+  <!-- ===================================================================== -->
+  <div id="modal-new-expense" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden animate-fade">
+      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <h3 class="text-base font-bold text-slate-900">Nova Linha de Conta — Leandro (2)</h3>
+        <button type="button" onclick="closeModal('modal-new-expense')" class="px-2 py-1 rounded-lg text-slate-500 hover:bg-slate-200 cursor-pointer">✕</button>
+      </div>
+      <form onsubmit="handleNewExpenseSubmit(event)" class="p-5 space-y-4">
+        <div>
+          <label for="new-exp-name" class="block text-xs font-semibold text-slate-700 mb-1">Nome da Conta</label>
+          <input type="text" id="new-exp-name" required placeholder="Ex: Academia, Seguro, Condomínio..." class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="new-exp-due" class="block text-xs font-semibold text-slate-700 mb-1">Dia Venc. (opcional)</label>
+            <input type="number" id="new-exp-due" min="1" max="31" placeholder="Ex: 10" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label for="new-exp-amount" class="block text-xs font-semibold text-slate-700 mb-1">Valor Mensal (R$)</label>
+            <input type="number" id="new-exp-amount" step="0.01" required placeholder="0,00" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-bold" />
+          </div>
+        </div>
+        <div>
+          <label for="new-exp-start" class="block text-xs font-semibold text-slate-700 mb-1">A partir de qual mês?</label>
+          <select id="new-exp-start" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm font-semibold bg-white"></select>
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" onclick="closeModal('modal-new-expense')" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer">Cancelar</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold cursor-pointer">Adicionar Linha</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 5: CONFIRMAÇÃO                                                  -->
+  <!-- ===================================================================== -->
+  <div id="modal-confirm" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden animate-fade">
+      <div class="px-5 py-4 border-b border-slate-200 bg-slate-50">
+        <h3 id="confirm-title" class="text-base font-bold text-slate-900">Confirmar Ação</h3>
+      </div>
+      <div class="p-5">
+        <p id="confirm-message" class="text-xs sm:text-sm text-slate-600"></p>
+        <div class="flex items-center justify-end gap-2 mt-5">
+          <button type="button" onclick="closeModal('modal-confirm')" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer">Cancelar</button>
+          <button type="button" id="confirm-action-btn" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold cursor-pointer">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // =========================================================================
     // 1. UTILITÁRIOS E FORMATAÇÃO (DEFINIDOS ANTES DE QUALQUER USO)
@@ -947,6 +1033,15 @@
         parsed.cardTotalOverrides = {};
       }
       if (Array.isArray(parsed.cardPurchases)) {
+        parsed.cardPurchases.forEach((p) => {
+          if (p && p.card === 'Porto' && typeof p.desc === 'string' && p.desc.trim().toLowerCase() === 'pedagio') {
+            p.recurring = false;
+          }
+        });
+      }
+      return parsed;
+    }
+
     function getCardCalculatedTotalForMonth(cardName, ym) {
       const items = getCardItemsForMonth(cardName, ym);
       return items.reduce((acc, item) => acc + item.monthlyAmount, 0);
@@ -1016,10 +1111,6 @@
       saveState();
       renderAll();
       showToast(`Fatura ${cardName} (${formatMonthLabel(ym)}) voltou ao cálculo automático.`, 'info');
-    }
-        });
-      }
-      return parsed;
     }
 
     try {
@@ -1114,11 +1205,6 @@
       });
 
       return items;
-    }
-
-    function getCardTotalForMonth(cardName, ym) {
-      const items = getCardItemsForMonth(cardName, ym);
-      return items.reduce((acc, item) => acc + item.monthlyAmount, 0);
     }
 
     function getPoupRescueForMonth(ym) {
