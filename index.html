@@ -53,6 +53,9 @@
 
           <!-- Seletor Mês Mobile -->
           <div class="flex items-center gap-1.5 lg:hidden">
+            <span id="cloud-sync-badge-mobile" onclick="forceCloudSyncNow()" title="Toque para sincronizar agora" class="px-2 py-1 rounded-lg bg-slate-800 border border-slate-700 text-[10px] font-semibold text-slate-300 cursor-pointer">
+              ...
+            </span>
             <button type="button" onclick="stepMonth(-1)" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 cursor-pointer" title="Mês anterior">◀</button>
             <select id="month-select-mobile" onchange="setSelectedMonth(this.value)" class="rounded-xl bg-slate-800 border border-slate-700 px-3 py-1.5 text-xs font-bold text-white focus:outline-none"></select>
             <button type="button" onclick="stepMonth(1)" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 cursor-pointer" title="Próximo mês">▶</button>
@@ -74,9 +77,9 @@
 
         <!-- Controles Desktop (Mês + Reset) -->
         <div class="hidden lg:flex items-center gap-3">
-          <span id="cloud-sync-badge" class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-[11px] font-medium text-slate-300">
+          <button type="button" id="cloud-sync-badge" onclick="forceCloudSyncNow()" title="Clique para forçar sincronização entre PC e celular" class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-[11px] font-medium text-slate-300 cursor-pointer">
             Conectando...
-          </span>
+          </button>
           <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-xl border border-slate-700">
             <button type="button" onclick="stepMonth(-1)" title="Mês anterior" class="px-2.5 py-1 rounded-lg hover:bg-slate-700 text-slate-300 hover:text-white text-xs cursor-pointer">◀</button>
             <select id="month-select-desktop" onchange="setSelectedMonth(this.value)" class="bg-transparent px-2 py-1 text-xs font-bold text-white focus:outline-none cursor-pointer"></select>
@@ -566,99 +569,23 @@
         <button type="button" onclick="closeModal('modal-card-breakdown')" class="px-2 py-1 rounded-lg text-slate-500 hover:bg-slate-200 cursor-pointer">✕</button>
       </div>
       <div id="breakdown-body" class="p-5 overflow-y-auto flex-1 space-y-2"></div>
-      <div class="px-5 py-3.5 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
-        <button type="button" id="breakdown-add-btn" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold cursor-pointer">+ Adicionar Compra Neste Cartão</button>
-        <button type="button" onclick="closeModal('modal-card-breakdown')" class="px-4 py-2 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer">Fechar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===================================================================== -->
-  <!-- MODAL 3: EDITAR CÉLULA DE RECEITA OU CONTA FIXA                       -->
-  <!-- ===================================================================== -->
-  <div id="modal-edit-cell" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden animate-fade">
-      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
-        <div>
-          <h3 id="edit-cell-title" class="text-base font-bold text-slate-900">Editar Valor</h3>
-          <p id="edit-cell-subtitle" class="text-xs text-slate-500"></p>
-        </div>
-        <button type="button" onclick="closeModal('modal-edit-cell')" class="px-2 py-1 rounded-lg text-slate-500 hover:bg-slate-200 cursor-pointer">✕</button>
-      </div>
-
-      <form onsubmit="handleEditCellSubmit(event)" class="p-5 space-y-4">
-        <input type="hidden" id="edit-cell-type" />
-        <input type="hidden" id="edit-cell-id" />
-        <input type="hidden" id="edit-cell-month" />
-
-        <div>
-          <label for="edit-cell-value" class="block text-xs font-semibold text-slate-700 mb-1">Valor (R$)</label>
-          <input type="number" id="edit-cell-value" step="0.01" required class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-base font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
-
-        <label class="flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer">
-          <input type="checkbox" id="edit-cell-propagate" class="mt-0.5 rounded text-blue-600" />
-          <span class="text-xs text-slate-700">
-            <strong>Replicar para os meses seguintes</strong><br/>
-            <span class="text-slate-500">Aplica este valor deste mês até o último mês ativo.</span>
-          </span>
-        </label>
-
-        <div class="flex items-center justify-end gap-2 pt-2">
-          <button type="button" onclick="closeModal('modal-edit-cell')" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer">Cancelar</button>
-          <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs cursor-pointer">Salvar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- ===================================================================== -->
-  <!-- MODAL 4: NOVA LINHA DE CONTA FIXA / VARIÁVEL                          -->
-  <!-- ===================================================================== -->
-  <div id="modal-new-expense" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden animate-fade">
-      <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
-        <h3 class="text-base font-bold text-slate-900">Nova Linha de Conta</h3>
-        <button type="button" onclick="closeModal('modal-new-expense')" class="px-2 py-1 rounded-lg text-slate-500 hover:bg-slate-200 cursor-pointer">✕</button>
-      </div>
-      <form onsubmit="handleNewExpenseSubmit(event)" class="p-5 space-y-4">
-        <div>
-          <label for="new-exp-name" class="block text-xs font-semibold text-slate-700 mb-1">Nome da Conta</label>
-          <input type="text" id="new-exp-name" required placeholder="Ex: Academia, Seguro Vida, Escola..." class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm" />
-        </div>
-        <div class="grid grid-cols-2 gap-3">
+      <div class="px-5 py-3.5 border-t border-slate-200 bg-slate-50 space-y-3">
+        <!-- Ajuste Manual do Total da Fatura em Leandro (2) -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-white border border-slate-200">
           <div>
-            <label for="new-exp-due" class="block text-xs font-semibold text-slate-700 mb-1">Dia Vencimento</label>
-            <input type="number" id="new-exp-due" min="1" max="31" placeholder="Ex: 10" class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm" />
+            <div class="text-xs font-bold text-slate-800">Total Manual da Fatura em Leandro (2)</div>
+            <div id="breakdown-override-status" class="text-[11px] text-slate-500">Calculado automaticamente pela soma das compras</div>
           </div>
-          <div>
-            <label for="new-exp-amount" class="block text-xs font-semibold text-slate-700 mb-1">Valor Mensal (R$)</label>
-            <input type="number" id="new-exp-amount" step="0.01" min="0" required placeholder="0,00" class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm font-bold" />
+          <div class="flex items-center gap-1.5">
+            <input type="number" step="0.01" id="breakdown-manual-total" placeholder="0,00" class="w-28 rounded-xl border border-slate-300 px-2.5 py-1.5 text-xs font-extrabold text-slate-900 tabular-nums focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <button type="button" id="breakdown-save-manual-btn" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold cursor-pointer">Salvar Valor</button>
+            <button type="button" id="breakdown-clear-manual-btn" class="hidden px-2.5 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-semibold cursor-pointer" title="Voltar ao cálculo automático">Auto</button>
           </div>
         </div>
-        <div>
-          <label for="new-exp-start" class="block text-xs font-semibold text-slate-700 mb-1">Iniciar a partir de</label>
-          <select id="new-exp-start" class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm font-semibold bg-white"></select>
-        </div>
-        <div class="flex items-center justify-end gap-2 pt-2">
-          <button type="button" onclick="closeModal('modal-new-expense')" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer">Cancelar</button>
-          <button type="submit" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs cursor-pointer">Adicionar Linha</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
-  <!-- ===================================================================== -->
-  <!-- MODAL 5: CONFIRMAÇÃO                                                  -->
-  <!-- ===================================================================== -->
-  <div id="modal-confirm" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden animate-fade">
-      <div class="p-5 space-y-3">
-        <h3 id="confirm-title" class="text-base font-bold text-slate-900">Confirmar Ação</h3>
-        <p id="confirm-message" class="text-xs sm:text-sm text-slate-600"></p>
-        <div class="flex items-center justify-end gap-2 pt-3">
-          <button type="button" onclick="closeModal('modal-confirm')" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer">Cancelar</button>
-          <button type="button" id="confirm-action-btn" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold cursor-pointer">Confirmar</button>
+        <div class="flex items-center justify-between">
+          <button type="button" id="breakdown-add-btn" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold cursor-pointer">+ Adicionar Compra Neste Cartão</button>
+          <button type="button" onclick="closeModal('modal-card-breakdown')" class="px-4 py-2 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer">Fechar</button>
         </div>
       </div>
     </div>
@@ -971,6 +898,8 @@
         savingsGoal: 5500.00,
         nextOrder: 1,
         currentMonthPoupAvailable: 0,
+        closedInvoices: {},
+        cardTotalOverrides: {},
         baseIncome,
         extraIncome,
         rows,
@@ -987,6 +916,15 @@
     let activeTab = 'leandro';
     let cardFilter = 'ALL';
     let onCloudSaveCallback = null;
+    let onForceCloudPullCallback = null;
+
+    function forceCloudSyncNow() {
+      if (typeof onForceCloudPullCallback === 'function') {
+        onForceCloudPullCallback();
+      } else {
+        showToast('Sincronização em nuvem ainda conectando...', 'info');
+      }
+    }
 
     function sanitizeState(parsed) {
       if (!parsed || !Array.isArray(parsed.months)) return createInitialData();
@@ -1002,13 +940,83 @@
       if (typeof parsed.currentMonthPoupAvailable !== 'number' || Number.isNaN(parsed.currentMonthPoupAvailable)) {
         parsed.currentMonthPoupAvailable = 0;
       }
+      if (!parsed.closedInvoices || typeof parsed.closedInvoices !== 'object') {
+        parsed.closedInvoices = {};
+      }
+      if (!parsed.cardTotalOverrides || typeof parsed.cardTotalOverrides !== 'object') {
+        parsed.cardTotalOverrides = {};
+      }
       if (Array.isArray(parsed.cardPurchases)) {
-        parsed.cardPurchases.forEach((p) => {
-          if (typeof p.addedOrder !== 'number') p.addedOrder = 0;
-          if (typeof p.createdAt !== 'string') p.createdAt = '';
-          if (p.card === 'Porto' && typeof p.desc === 'string' && p.desc.trim().toLowerCase() === 'pedagio') {
-            p.recurring = false;
-          }
+    function getCardCalculatedTotalForMonth(cardName, ym) {
+      const items = getCardItemsForMonth(cardName, ym);
+      return items.reduce((acc, item) => acc + item.monthlyAmount, 0);
+    }
+
+    function getCardOverrideKey(cardName, ym) {
+      return `${cardName}_${ym}`;
+    }
+
+    function isInvoiceClosed(cardName, ym) {
+      return Boolean(state.closedInvoices && state.closedInvoices[getCardOverrideKey(cardName, ym)]);
+    }
+
+    function hasCardTotalOverride(cardName, ym) {
+      const key = getCardOverrideKey(cardName, ym);
+      return state.cardTotalOverrides && typeof state.cardTotalOverrides[key] === 'number' && !Number.isNaN(state.cardTotalOverrides[key]);
+    }
+
+    function getCardTotalForMonth(cardName, ym) {
+      const key = getCardOverrideKey(cardName, ym);
+      if (hasCardTotalOverride(cardName, ym)) {
+        return state.cardTotalOverrides[key];
+      }
+      return getCardCalculatedTotalForMonth(cardName, ym);
+    }
+
+    function toggleCloseInvoice(cardName, ym) {
+      const key = getCardOverrideKey(cardName, ym);
+      if (!state.closedInvoices) state.closedInvoices = {};
+      const currentlyClosed = Boolean(state.closedInvoices[key]);
+
+      if (currentlyClosed) {
+        delete state.closedInvoices[key];
+        saveState();
+        renderAll();
+        showToast(`Fatura ${cardName} (${formatMonthLabel(ym)}) reaberta!`, 'info');
+      } else {
+        state.closedInvoices[key] = true;
+        saveState();
+        renderAll();
+        const nextYm = addMonths(ym, 1);
+        showToast(`Fatura ${cardName} (${formatMonthLabel(ym)}) fechada! Novas compras irão para ${formatMonthLabel(nextYm)}.`, 'success');
+      }
+    }
+
+    function setCardManualTotalOverride(cardName, ym, rawVal) {
+      if (!state.cardTotalOverrides) state.cardTotalOverrides = {};
+      const key = getCardOverrideKey(cardName, ym);
+      const val = parseFloat(rawVal);
+      if (Number.isNaN(val)) {
+        delete state.cardTotalOverrides[key];
+        saveState();
+        renderAll();
+        showToast(`Fatura ${cardName} (${formatMonthLabel(ym)}) voltou ao cálculo automático.`, 'info');
+        return;
+      }
+      state.cardTotalOverrides[key] = Math.round(val * 100) / 100;
+      saveState();
+      renderAll();
+      showToast(`Total manual de ${formatBRL(state.cardTotalOverrides[key])} salvo para ${cardName} (${formatMonthLabel(ym)})!`, 'success');
+    }
+
+    function clearCardManualTotalOverride(cardName, ym) {
+      if (!state.cardTotalOverrides) return;
+      const key = getCardOverrideKey(cardName, ym);
+      delete state.cardTotalOverrides[key];
+      saveState();
+      renderAll();
+      showToast(`Fatura ${cardName} (${formatMonthLabel(ym)}) voltou ao cálculo automático.`, 'info');
+    }
         });
       }
       return parsed;
@@ -1024,6 +1032,7 @@
     }
 
     function saveState() {
+      state.lastUpdated = Date.now();
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       } catch (err) {
@@ -1470,9 +1479,15 @@
               const val = metricsByMonth[m].rowValues[row.id] || 0;
               const sel = m === state.selectedMonth ? 'bg-blue-50/70' : '';
               if (isCard) {
+                const isManual = hasCardTotalOverride(row.cardName, m);
+                const isClosed = isInvoiceClosed(row.cardName, m);
                 return `
-                  <td onclick="openCardBreakdownModal('${row.cardName}', '${m}')" title="Clique para ver as compras desta fatura" class="py-2.5 px-3 text-right tabular-nums cursor-pointer font-semibold text-blue-700 hover:underline ${sel}">
-                    ${val > 0 ? formatBRL(val) : '<span class="text-slate-300 font-normal">R$ 0,00</span>'}
+                  <td onclick="openCardBreakdownModal('${row.cardName}', '${m}')" title="Clique para ver compras ou editar o total manual desta fatura" class="py-2.5 px-3 text-right tabular-nums cursor-pointer font-semibold ${isManual ? 'text-amber-700' : 'text-blue-700'} hover:underline ${sel}">
+                    <div class="inline-flex items-center justify-end gap-1">
+                      ${isClosed ? '<span title="Fatura fechada" class="text-[10px]">🔒</span>' : ''}
+                      ${isManual ? '<span title="Valor ajustado manualmente" class="px-1 rounded bg-amber-100 text-amber-800 text-[9px] font-bold">Manual</span>' : ''}
+                      <span>${val > 0 ? formatBRL(val) : '<span class="text-slate-300 font-normal">R$ 0,00</span>'}</span>
+                    </div>
                   </td>
                 `;
               } else {
@@ -1542,21 +1557,32 @@
 
       document.getElementById('cards-summary-grid').innerHTML = cardsMeta.map((c) => {
         const items = getCardItemsForMonth(c.name, ym);
-        const total = items.reduce((s, it) => s + it.monthlyAmount, 0);
+        const total = getCardTotalForMonth(c.name, ym);
+        const isManual = hasCardTotalOverride(c.name, ym);
+        const isClosed = isInvoiceClosed(c.name, ym);
         const nextYm = addMonths(ym, 1);
         const nextTotal = getCardTotalForMonth(c.name, nextYm);
         const isSelected = cardFilter === c.name;
 
         return `
           <div onclick="setCardFilter('${isSelected ? 'ALL' : c.name}')" class="bg-white rounded-2xl border ${isSelected ? 'border-blue-600 ring-2 ring-blue-500/20' : 'border-slate-200'} p-5 shadow-xs cursor-pointer hover:border-blue-400 transition">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5 flex-wrap">
                 <span class="text-base font-extrabold text-slate-900">Cartão ${c.name}</span>
                 <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600">${c.due}</span>
+                ${isClosed ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">🔒 Fechada</span>' : ''}
               </div>
-              <button type="button" onclick="event.stopPropagation(); openNewCardPurchaseModal('${c.name}')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold cursor-pointer">+ Lançar</button>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button type="button" onclick="event.stopPropagation(); toggleCloseInvoice('${c.name}', '${ym}')" class="px-2.5 py-1 rounded-lg ${isClosed ? 'bg-amber-100 hover:bg-amber-200 text-amber-900' : 'bg-slate-800 hover:bg-slate-900 text-white'} text-xs font-semibold cursor-pointer">
+                  ${isClosed ? 'Reabrir' : 'Fechar Fatura'}
+                </button>
+                <button type="button" onclick="event.stopPropagation(); openNewCardPurchaseModal('${c.name}')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold cursor-pointer">+ Lançar</button>
+              </div>
             </div>
-            <div class="text-2xl font-extrabold text-slate-900 mt-3 tabular-nums">${formatBRL(total)}</div>
+            <div class="flex items-baseline gap-2 mt-3">
+              <div class="text-2xl font-extrabold text-slate-900 tabular-nums">${formatBRL(total)}</div>
+              ${isManual ? '<span class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[10px] font-bold">Total Manual</span>' : ''}
+            </div>
             <div class="flex items-center justify-between text-xs text-slate-500 mt-2 pt-2 border-t border-slate-100">
               <span>${items.length} lançamentos em ${formatMonthLabel(ym)}</span>
               <span>Próx. (${formatMonthLabel(nextYm)}): <strong class="text-slate-700">${formatBRL(nextTotal)}</strong></span>
@@ -2100,11 +2126,29 @@
       const card = document.getElementById(`${prefix}-card`).value;
       const desc = document.getElementById(`${prefix}-desc`).value.trim();
       const mode = document.getElementById(`${prefix}-mode`).value;
-      const startMonth = document.getElementById(`${prefix}-start-month`).value || state.selectedMonth;
+      let startMonth = document.getElementById(`${prefix}-start-month`).value || state.selectedMonth;
       const amountType = document.getElementById(`${prefix}-amount-type`).value;
       const rawAmount = parseFloat(document.getElementById(`${prefix}-amount`).value);
 
       if (!desc || Number.isNaN(rawAmount) || rawAmount === 0) return;
+
+      // Se a fatura do mês escolhido já estiver fechada (nova compra), avança automaticamente para o próximo mês aberto
+      let redirectedNotice = '';
+      if (!editId) {
+        const originalMonth = startMonth;
+        let guard = 0;
+        while (isInvoiceClosed(card, startMonth) && guard < 24) {
+          startMonth = addMonths(startMonth, 1);
+          guard++;
+        }
+        if (startMonth !== originalMonth) {
+          if (!state.months.includes(startMonth)) {
+            state.months.push(startMonth);
+            state.months.sort();
+          }
+          redirectedNotice = ` (Fatura de ${formatMonthLabel(originalMonth)} fechada → lançada em ${formatMonthLabel(startMonth)})`;
+        }
+      }
 
       let recurring = false;
       let currentInst = 1;
@@ -2160,7 +2204,7 @@
           document.getElementById('inline-amount').value = '';
           updatePurchaseFormPreview('inline');
         }
-        showToast(`"${desc}" adicionada em 1º no Cartão ${card} (${formatShortDateBR(createdAt)})!`, 'success');
+        showToast(`"${desc}" adicionada em 1º no Cartão ${card} (${formatShortDateBR(createdAt)})${redirectedNotice}!`, 'success');
       }
 
       saveState();
@@ -2185,10 +2229,39 @@
 
     function openCardBreakdownModal(cardName, ym) {
       const items = getCardItemsForMonth(cardName, ym);
-      const total = items.reduce((s, it) => s + it.monthlyAmount, 0);
+      const calcTotal = getCardCalculatedTotalForMonth(cardName, ym);
+      const currentTotal = getCardTotalForMonth(cardName, ym);
+      const isManual = hasCardTotalOverride(cardName, ym);
+      const isClosed = isInvoiceClosed(cardName, ym);
 
-      document.getElementById('breakdown-title').textContent = `Cartão ${cardName} — ${formatMonthLabel(ym)}`;
-      document.getElementById('breakdown-subtitle').textContent = `${items.length} lançamento(s) • Total da fatura: ${formatBRL(total)}`;
+      document.getElementById('breakdown-title').textContent = `Cartão ${cardName} — ${formatMonthLabel(ym)}${isClosed ? ' (Fechada)' : ''}`;
+      document.getElementById('breakdown-subtitle').textContent = `${items.length} lançamento(s) • Soma das compras: ${formatBRL(calcTotal)} • Total ativo: ${formatBRL(currentTotal)}`;
+
+      const manualInput = document.getElementById('breakdown-manual-total');
+      const statusEl = document.getElementById('breakdown-override-status');
+      const saveBtn = document.getElementById('breakdown-save-manual-btn');
+      const clearBtn = document.getElementById('breakdown-clear-manual-btn');
+
+      if (manualInput && statusEl && saveBtn && clearBtn) {
+        manualInput.value = currentTotal.toFixed(2);
+        if (isManual) {
+          statusEl.innerHTML = `<span class="text-amber-700 font-semibold">Valor manual ativo</span> (soma automática das compras: ${formatBRL(calcTotal)})`;
+          clearBtn.classList.remove('hidden');
+        } else {
+          statusEl.textContent = 'Calculado automaticamente pela soma das compras';
+          clearBtn.classList.add('hidden');
+        }
+
+        saveBtn.onclick = () => {
+          setCardManualTotalOverride(cardName, ym, manualInput.value);
+          openCardBreakdownModal(cardName, ym);
+        };
+
+        clearBtn.onclick = () => {
+          clearCardManualTotalOverride(cardName, ym);
+          openCardBreakdownModal(cardName, ym);
+        };
+      }
 
       document.getElementById('breakdown-add-btn').onclick = () => {
         closeModal('modal-card-breakdown');
@@ -2406,8 +2479,8 @@
   <!-- Sincronização automática em nuvem em segundo plano (sem alterar nada do app) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDocFromServer, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     const DEFAULT_FIREBASE_CONFIG = {
       apiKey: "AIzaSyDXOZ5-sqgg4-HfdltCyxXvvIZMkbzIl4I",
@@ -2417,63 +2490,100 @@
     };
 
     function updateSyncBadge(text, isOk) {
-      const badge = document.getElementById('cloud-sync-badge');
-      if (!badge) return;
-      badge.textContent = text;
-      badge.className = isOk
-        ? 'px-2.5 py-1 rounded-lg bg-emerald-950/80 border border-emerald-700/60 text-[11px] font-semibold text-emerald-300'
-        : 'px-2.5 py-1 rounded-lg bg-amber-950/80 border border-amber-700/60 text-[11px] font-semibold text-amber-300';
+      const badgeDesk = document.getElementById('cloud-sync-badge');
+      const badgeMob = document.getElementById('cloud-sync-badge-mobile');
+      if (badgeDesk) {
+        badgeDesk.textContent = text;
+        badgeDesk.className = isOk
+          ? 'px-2.5 py-1 rounded-lg bg-emerald-950/80 border border-emerald-700/60 text-[11px] font-semibold text-emerald-300 cursor-pointer'
+          : 'px-2.5 py-1 rounded-lg bg-amber-950/80 border border-amber-700/60 text-[11px] font-semibold text-amber-300 cursor-pointer';
+      }
+      if (badgeMob) {
+        badgeMob.textContent = isOk ? '☁ OK' : '⚠ Local';
+        badgeMob.className = isOk
+          ? 'px-2 py-1 rounded-lg bg-emerald-950/80 border border-emerald-700/60 text-[10px] font-semibold text-emerald-300 cursor-pointer'
+          : 'px-2 py-1 rounded-lg bg-amber-950/80 border border-amber-700/60 text-[10px] font-semibold text-amber-300 cursor-pointer';
+      }
     }
 
     (async () => {
       try {
-        const firebaseConfig = (typeof __firebase_config !== 'undefined' && __firebase_config)
-          ? (typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config)
-          : DEFAULT_FIREBASE_CONFIG;
-
-        const app = initializeApp(firebaseConfig);
+        // Sempre usa o projeto oficial do Leandro para garantir que PC e Celular leiam o mesmo banco
+        const app = initializeApp(DEFAULT_FIREBASE_CONFIG, 'orcamento-leandro-sync');
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
-        }
+        await signInAnonymously(auth);
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'orcamento-leandro-26c54';
-        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'orcamento_leandro', 'estado_principal');
+        // Caminho único e fixo compartilhado entre todos os dispositivos (PC e App/Mobile)
+        const docRef = doc(db, 'artifacts', 'orcamento-leandro-26c54', 'public', 'data', 'orcamento_leandro', 'estado_principal');
 
         let isRemoteUpdate = false;
         let saveTimeout = null;
+        let lastKnownCloudTimestamp = 0;
+
+        function applyIncomingCloudData(rawPayload, serverUpdatedAt) {
+          if (!rawPayload) return false;
+          const incoming = sanitizeState(JSON.parse(rawPayload));
+          const ts = Number(serverUpdatedAt || incoming.lastUpdated || 0);
+          if (ts > 0) lastKnownCloudTimestamp = Math.max(lastKnownCloudTimestamp, ts);
+
+          if (JSON.stringify(incoming) !== JSON.stringify(state)) {
+            isRemoteUpdate = true;
+            state = incoming;
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (e) {}
+            renderAll();
+            isRemoteUpdate = false;
+            return true;
+          }
+          return false;
+        }
 
         onCloudSaveCallback = (currentState) => {
           if (isRemoteUpdate) return;
           updateSyncBadge('Salvando...', true);
           clearTimeout(saveTimeout);
+          const nowTs = Date.now();
+          lastKnownCloudTimestamp = nowTs;
           saveTimeout = setTimeout(() => {
             setDoc(docRef, {
               payload: JSON.stringify(currentState),
-              updatedAt: Date.now()
+              updatedAt: nowTs
             }).then(() => {
               updateSyncBadge('Nuvem OK', true);
             }).catch((err) => {
               console.error('Erro ao salvar na nuvem:', err);
-              updateSyncBadge('Salvo Local', false);
+              updateSyncBadge('Erro Nuvem', false);
             });
-          }, 300);
+          }, 250);
         };
 
-        const initialSnap = await getDoc(docRef);
-        if (initialSnap.exists() && initialSnap.data().payload) {
-          const parsed = JSON.parse(initialSnap.data().payload);
-          isRemoteUpdate = true;
-          state = sanitizeState(parsed);
+        onForceCloudPullCallback = async () => {
           try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-          } catch (e) {}
-          renderAll();
-          isRemoteUpdate = false;
+            updateSyncBadge('Sincronizando...', true);
+            const freshSnap = await getDocFromServer(docRef);
+            if (freshSnap.exists() && freshSnap.data().payload) {
+              const updated = applyIncomingCloudData(freshSnap.data().payload, freshSnap.data().updatedAt);
+              updateSyncBadge('Nuvem OK', true);
+              showToast(updated ? 'Dados atualizados da nuvem!' : 'Já está sincronizado com a nuvem!', 'success');
+            } else {
+              await setDoc(docRef, { payload: JSON.stringify(state), updatedAt: Date.now() });
+              updateSyncBadge('Nuvem OK', true);
+              showToast('Dados locais enviados para a nuvem!', 'success');
+            }
+          } catch (err) {
+            console.error('Falha ao buscar do servidor:', err);
+            updateSyncBadge('Modo Local', false);
+            showToast('Não foi possível conectar ao Firebase agora.', 'warning');
+          }
+        };
+
+        // Busca direto do servidor (ignora cache offline desatualizado do navegador)
+        const initialSnap = await getDocFromServer(docRef);
+        if (initialSnap.exists() && initialSnap.data().payload) {
+          applyIncomingCloudData(initialSnap.data().payload, initialSnap.data().updatedAt);
         } else {
           await setDoc(docRef, {
             payload: JSON.stringify(state),
@@ -2483,25 +2593,33 @@
 
         updateSyncBadge('Nuvem OK', true);
 
-        onSnapshot(docRef, (snap) => {
+        // Escuta alterações em tempo real vindas do outro dispositivo
+        onSnapshot(docRef, { includeMetadataChanges: false }, (snap) => {
           if (snap.exists() && snap.data().payload) {
-            const incoming = sanitizeState(JSON.parse(snap.data().payload));
-            if (JSON.stringify(incoming) !== JSON.stringify(state)) {
-              isRemoteUpdate = true;
-              state = incoming;
-              try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-              } catch (e) {}
-              renderAll();
-              isRemoteUpdate = false;
+            const changed = applyIncomingCloudData(snap.data().payload, snap.data().updatedAt);
+            updateSyncBadge('Nuvem OK', true);
+            if (changed) {
+              showToast('Sincronizado com alteração de outro dispositivo.', 'info');
             }
           }
         }, (err) => {
           console.error('Erro na escuta em tempo real:', err);
           updateSyncBadge('Modo Local', false);
         });
+
+        // Re-sincroniza automaticamente ao voltar para a aba/app no celular ou PC
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') {
+            getDocFromServer(docRef).then((snap) => {
+              if (snap.exists() && snap.data().payload) {
+                applyIncomingCloudData(snap.data().payload, snap.data().updatedAt);
+                updateSyncBadge('Nuvem OK', true);
+              }
+            }).catch(() => {});
+          }
+        });
       } catch (err) {
-        console.warn('Sincronização em nuvem indisponível, operando com armazenamento local:', err);
+        console.warn('Sincronização em nuvem indisponível:', err);
         updateSyncBadge('Modo Local', false);
       }
     })();
